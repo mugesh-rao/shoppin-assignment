@@ -1,0 +1,90 @@
+import { motion } from 'framer-motion';
+
+const formatPrice = (price) => {
+  return `₹${price.toLocaleString()}`;
+};
+
+const ProductCard = ({ product, style, onSwipe, ...props }) => {
+  return (
+    <motion.div
+      className="absolute w-full max-w-sm mx-auto bg-white rounded-xl shadow-lg overflow-hidden"
+      style={style}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.7}
+      onDragEnd={(e, { offset, velocity }) => {
+        const swipe = offset.x;
+        if (swipe < -100) {
+          onSwipe('left', product.id);
+        } else if (swipe > 100) {
+          onSwipe('right', product.id);
+        } else if (velocity.y < -100) {
+          onSwipe('up', product.id);
+        }
+      }}
+      whileDrag={{ 
+        scale: 1.05,
+        rotate: ({ x }) => x * 0.05
+      }}
+      {...props}
+    >
+      <div className="relative h-80 w-full overflow-hidden">
+        <img 
+          src={product.imageUrl} 
+          alt={product.name} 
+          className="w-full h-full object-cover"
+        />
+        {product.discountPercentage > 0 && (
+          <div className="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+            {product.discountPercentage}% OFF
+          </div>
+        )}
+      </div>
+      
+      <div className="p-5">
+        <h2 className="text-lg font-semibold capitalize mb-1">{product.name}</h2>
+        <p className="text-sm text-gray-600 uppercase mb-3">{product.brand}</p>
+        
+        <div className="flex items-center">
+          <span className="text-lg font-bold mr-2">{formatPrice(product.price)}</span>
+          {product.originalPrice > product.price && (
+            <span className="text-sm text-gray-500 line-through">
+              {formatPrice(product.originalPrice)}
+            </span>
+          )}
+        </div>
+      </div>
+      
+      <div className="flex justify-center items-center pb-4 space-x-6">
+        <div className="flex flex-col items-center">
+          <span className="bg-red-100 text-red-500 p-2 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </span>
+          <span className="text-xs mt-1">Swipe Left</span>
+        </div>
+        
+        <div className="flex flex-col items-center">
+          <span className="bg-green-100 text-green-500 p-2 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </span>
+          <span className="text-xs mt-1">Swipe Right</span>
+        </div>
+        
+        <div className="flex flex-col items-center">
+          <span className="bg-blue-100 text-blue-500 p-2 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </span>
+          <span className="text-xs mt-1">Swipe Up</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+export default ProductCard; 
